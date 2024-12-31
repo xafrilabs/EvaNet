@@ -151,10 +151,10 @@ def make_dir(feature_files):
             os.mkdir("./Region_1_2_TRAIN_Region_3_TEST/cropped_data_val_test")
 
     # Add directory for combined dataset
-    if not os.path.exists("./Combined_Regions"):
-        os.mkdir("./Combined_Regions")
-        os.mkdir("./Combined_Regions/cropped_data_train")
-        os.mkdir("./Combined_Regions/cropped_data_val_test")
+    if not os.path.exists("./Region_X_X_TRAIN_Region_X_TEST"):
+        os.mkdir("./Region_X_X_TRAIN_Region_X_TEST")
+        os.mkdir("./Region_X_X_TRAIN_Region_X_TEST/cropped_data_train")
+        os.mkdir("./Region_X_X_TRAIN_Region_X_TEST/cropped_data_val_test")
         
 
 def move_files(feature_files):
@@ -205,8 +205,8 @@ def move_files(feature_files):
                         shutil.copyfile(source, destination)
 
     # Handle combined dataset with 90:10 split
-    train_dir = "./Combined_Regions/cropped_data_train"
-    test_dir = "./Combined_Regions/cropped_data_val_test"
+    train_dir = "./Region_X_X_TRAIN_Region_X_TEST/cropped_data_train"
+    test_dir = "./Region_X_X_TRAIN_Region_X_TEST/cropped_data_val_test"
 
     train_split = int(len(grouped_files) * 0.9)
     train_groups = grouped_files[:train_split]
