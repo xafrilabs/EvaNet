@@ -160,56 +160,69 @@ def make_dir(feature_files):
 def move_files(feature_files):
 
     all_files = os.listdir("./cropped")
-    random.shuffle(all_files)  # Shuffle files to ensure randomness for the combined dataset
+
+    # Group feature and label files together
+    grouped_files = {}
+    for file in all_files:
+        base_name = "_".join(file.split("_")[:-1])  # Exclude the last part ("features.npy" or "label.npy")
+        if base_name not in grouped_files:
+            grouped_files[base_name] = []
+        grouped_files[base_name].append(file)
+
+    grouped_files = list(grouped_files.values())
+    random.shuffle(grouped_files)  # Shuffle groups to ensure randomness for the combined dataset
 
     for feature_file in feature_files:
 
         print("Processing: ", feature_file)
         region_num = int(feature_file.split("_")[1])
 
-        for file in tqdm(all_files):
-            file_region_num = int(file.split("_")[1])
-            source = os.path.join("./cropped", file)
+        for group in tqdm(grouped_files):
+            file_region_num = int(group[0].split("_")[1])  # Assuming region number is consistent across files in the group
+            for file in group:
+                source = os.path.join("./cropped", file)
 
-            if region_num == 1:
-                if region_num == file_region_num:
-                    destination = os.path.join("./Region_2_3_TRAIN_Region_1_TEST/cropped_data_val_test", file)
-                    shutil.copyfile(source, destination)
+                if region_num == 1:
+                    if region_num == file_region_num:
+                        destination = os.path.join("./Region_2_3_TRAIN_Region_1_TEST/cropped_data_val_test", file)
+                        shutil.copyfile(source, destination)
+                    else:
+                        destination = os.path.join("./Region_2_3_TRAIN_Region_1_TEST/cropped_data_train", file)
+                        shutil.copyfile(source, destination)
+                elif region_num == 2:
+                    if region_num == file_region_num:
+                        destination = os.path.join("./Region_1_3_TRAIN_Region_2_TEST/cropped_data_val_test", file)
+                        shutil.copyfile(source, destination)
+                    else:
+                        destination = os.path.join("./Region_1_3_TRAIN_Region_2_TEST/cropped_data_train", file)
+                        shutil.copyfile(source, destination)
                 else:
-                    destination = os.path.join("./Region_2_3_TRAIN_Region_1_TEST/cropped_data_train", file)
-                    shutil.copyfile(source, destination)
-            elif region_num == 2:
-                if region_num == file_region_num:
-                    destination = os.path.join("./Region_1_3_TRAIN_Region_2_TEST/cropped_data_val_test", file)
-                    shutil.copyfile(source, destination)
-                else:
-                    destination = os.path.join("./Region_1_3_TRAIN_Region_2_TEST/cropped_data_train", file)
-                    shutil.copyfile(source, destination)
-            else:
-                if region_num == file_region_num:
-                    destination = os.path.join("./Region_1_2_TRAIN_Region_3_TEST/cropped_data_val_test", file)
-                    shutil.copyfile(source, destination)
-                else:
-                    destination = os.path.join("./Region_1_2_TRAIN_Region_3_TEST/cropped_data_train", file)
-                    shutil.copyfile(source, destination)
+                    if region_num == file_region_num:
+                        destination = os.path.join("./Region_1_2_TRAIN_Region_3_TEST/cropped_data_val_test", file)
+                        shutil.copyfile(source, destination)
+                    else:
+                        destination = os.path.join("./Region_1_2_TRAIN_Region_3_TEST/cropped_data_train", file)
+                        shutil.copyfile(source, destination)
 
     # Handle combined dataset with 90:10 split
     train_dir = "./Combined_Regions/cropped_data_train"
     test_dir = "./Combined_Regions/cropped_data_val_test"
 
-    train_split = int(len(all_files) * 0.9)
-    train_files = all_files[:train_split]
-    test_files = all_files[train_split:]
+    train_split = int(len(grouped_files) * 0.9)
+    train_groups = grouped_files[:train_split]
+    test_groups = grouped_files[train_split:]
 
-    for file in train_files:
-        source = os.path.join("./cropped", file)
-        destination = os.path.join(train_dir, file)
-        shutil.copyfile(source, destination)
+    for group in train_groups:
+        for file in group:
+            source = os.path.join("./cropped", file)
+            destination = os.path.join(train_dir, file)
+            shutil.copyfile(source, destination)
 
-    for file in test_files:
-        source = os.path.join("./cropped", file)
-        destination = os.path.join(test_dir, file)
-        shutil.copyfile(source, destination)          
+    for group in test_groups:
+        for file in group:
+            source = os.path.join("./cropped", file)
+            destination = os.path.join(test_dir, file)
+            shutil.copyfile(source, destination)
 
 
 def main():
