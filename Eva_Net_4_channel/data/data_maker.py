@@ -15,6 +15,30 @@ import random
 
 from tqdm import tqdm
 
+def resize_data(input_data, factor, is_feature=False):
+    """
+    Resizes the height and width of input_data by dividing them by the given factor.
+
+    Args:
+        input_data (numpy array): The data to resize.
+        factor (int): The factor by which height and width will be divided.
+        is_feature (bool): If True, handles data with a channel dimension.
+
+    Returns:
+        numpy array: The resized data.
+    """
+    height = input_data.shape[0]
+    width = input_data.shape[1]
+
+    new_height = math.ceil(height / factor)
+    new_width = math.ceil(width / factor)
+
+    if is_feature:
+        resized_data = input_data[::factor, ::factor, :]
+    else:
+        resized_data = input_data[::factor, ::factor]
+
+    return resized_data
 
 def pad_data(unpadded_data, is_feature = False):
     
@@ -118,6 +142,10 @@ def make_data(feature_files, data_path):
         except:
             print(f"No such files as {label_file}")
 
+        ###########Resize data to desired size ######################################
+        feature_data = resize_data(feature_data, factor=5, is_feature=True)
+        label_data = resize_data(label_data, factor=5)
+        
         ###########Padd data to fit SPATIAL_SIZE pathches######################################
         padded_feature = pad_data(feature_data, is_feature = True)
         padded_label = pad_data(label_data)
