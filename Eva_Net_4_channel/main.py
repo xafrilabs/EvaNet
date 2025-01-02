@@ -13,6 +13,7 @@ from tqdm import tqdm
 
 import matplotlib.pyplot as plt
 import cv2
+import math
 
 import argparse
 
@@ -135,6 +136,10 @@ def center_crop(stictched_data, image, meta):
     
     original_height = meta[dict_key]['height']
     original_width = meta[dict_key]['width']
+
+    original_height = math.ceil(original_height / 5)
+    original_width = math.ceil(original_width / 5)
+    
     # print("original_height: ", original_height)
     # print("original_width: ", original_width)
     
