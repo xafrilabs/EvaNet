@@ -7,6 +7,7 @@ from data.data import *
 from eva_net_model import *
 from loss import *
 from metrics import *
+from data.data_maker import resize_data
 
 from tqdm import tqdm
 
@@ -405,6 +406,7 @@ def main(args):
         
         ## Load GT data for evaluation
         gt_labels = np.load(f"./data/repo/FloodNetData/{args.test_region[:-5]}_labels.npy")
+        gt_labels = resize_data(gt_labels, factor=5)
         
         ## Run Evaluation
         print("############Starting Model Evalution###############")
