@@ -152,6 +152,13 @@ def center_crop(stictched_data, image, meta):
     
     cropped = stictched_data[height_diff//2:current_height-height_diff//2, width_diff//2: current_width-width_diff//2]
     
+    if cropped.ndim == 2:  # For 2D arrays
+        cropped = cropped[:-1, :-1]
+    elif cropped.ndim == 3:  # For 3D arrays with a channel dimension
+        cropped = cropped[:-1, :-1, :]
+    else:
+        raise ValueError("Array must be 2D or 3D with a channel dimension.")
+    
     return cropped
 
 
